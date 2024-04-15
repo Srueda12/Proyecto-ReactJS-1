@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Ventas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        h2 {
+            color: #343a40;
+        }
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .product-item {
+            border: 1px solid #ced4da;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            transition: transform 0.3s ease;
+        }
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .product-img {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .product-img img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product-info h3 {
+            margin-top: 0;
+            color: #343a40;
+        }
+        .product-info p {
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+        .product-info button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .product-info button:hover {
+            background-color: #0056b3;
+        }
+        #product-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #product-list li {
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        #product-list li .product-img {
+            float: left;
+            margin-right: 10px;
+        }
+        #product-list li .product-info {
+            float: left;
+        }
+        #carrito-detalle {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        #carrito-detalle h3 {
+            margin-top: 0;
+            color: #343a40;
+        }
+        #carrito-detalle ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #carrito-detalle li {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #carrito-detalle .total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .cantidad-input {
+            width: 50px;
+            text-align: center;
+        }
+        #payu-form {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        #payu-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        #payu-form input[type="text"],
+        #payu-form input[type="number"],
+        #payu-form input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        #payu-form input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #payu-form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tienda de Ventas</h1>
+        
+        <h2>Productos</h2>
+        <div class="product-list" id="product-list">
+        </div>
+
+        <h2>Productos en el Carrito</h2>
+        <button onclick="mostrarDetalleCarrito()">Ver Detalles del Carrito</button>
+        <div id="carrito-detalle">
+            <h3>Detalle del Carrito</h3>
+            <ul id="carrito-list">
+            </ul>
+            <div class="total" id="total">Total: $0.00</div>
+            <button onclick="iniciarPago()">Pagar con PSE</button>
+        </div>
+
+       
+        <form id="payu-form" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu" method="POST">
+            <h2>Formulario de Pago con PSE</h2>
+            <div>
+                <label for="merchantId">Merchant Id:</label>
+                <input type="text" id="merchantId" name="merchantId" value="">
+            </div>
+            <div>
+                <label for="accountId">Account Id:</label>
+                <input type="text" id="accountId" name="accountId" value="">
+            </div>
+            <div>
+                <label for="description">Descripción:</label>
+                <input type="text" id="description" name="description" value="">
+            </div>
+            <div>
+                <label for="referenceCode">Referencia:</label>
+                <input type="text" id="referenceCode" name="referenceCode" value="ORD123456">
+            </div>
+            <div>
+                <label for="amount">Valor:</label>
+                <input type="number" id="amount" name="amount" value="">
+            </div>
+            <div>
+                <label for="tax">Impuesto:</label>
+                <input type="number" id="tax" name="tax" value="0">
+            </div>
+            <div>
+                <label for="taxReturnBase">Base de Devolución de Impuesto:</label>
+                <input type="number" id="taxReturnBase" name="taxReturnBase" value="0">
+            </div>
+            <div>
+                <label for="currency">Moneda:</label>
+                <input type="text" id="currency" name="currency" value="COP">
+            </div>
+            <div>
+                <label for="buyerFullName">Nombre Completo:</label>
+                <input type="text" id="buyerFullName" name="buyerFullName" value="John Doe">
+            </div>
+            <div>
+                <label for="buyerEmail">Email:</label>
+                <input type="email" id="buyerEmail" name="buyerEmail" value="john.doe@example.com">
+            </div>
+            <div>
+                <label for="responseUrl">URL de Respuesta:</label>
+                <input type="text" id="responseUrl" name="responseUrl" value="https://www.tuweb.com/respuesta">
+            </div>
+            <div>
+                <label for="confirmationUrl">URL de Confirmación:</label>
+                <input type="text" id="confirmationUrl" name="confirmationUrl" value="https://www.tuweb.com/confirmacion">
+            </div>
+            <input type="submit" value="Pagar con PSE">
+        </form>
+    </div>
+
+    <script>
+        async function obtenerProductosFakeStore() {
+            try {
+                const response = await fetch('https://fakestoreapi.com/products');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error al obtener datos de la API:', error);
+                return [];
+            }
+        }
+
+        const productList = document.getElementById('product-list');
+        const carritoList = document.getElementById('carrito-list');
+        const totalElement = document.getElementById('total');
+        let carrito = [];
+
+        function agregarAlCarrito(nombre, precio, imagen) {
+            const productoEnCarrito = {
+                nombre: nombre,
+                precio: precio,
+                imagen: imagen,
+                cantidad: 1
+            };
+            
+            const productoExistenteIndex = carrito.findIndex(item => item.nombre === nombre);
+            if (productoExistenteIndex !== -1) {
+                carrito[productoExistenteIndex].cantidad++;
+            } else {
+                carrito.push(productoEnCarrito);
+            }
+            
+            renderizarCarrito();
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            renderizarCarrito();
+        }
+
+        function renderizarCarrito() {
+            carritoList.innerHTML = '';
+            let total = 0;
+            carrito.forEach((item, index) => {
+                const carritoItem = document.createElement('li');
+                carritoItem.innerHTML = `
+                    <div class="product-img">
+                        <img src="${item.imagen}" alt="${item.nombre}">
+                    </div>
+                    <div class="product-info">
+                        <strong>${item.nombre}</strong> - $${item.precio.toFixed(2)} x
+                        <input class="cantidad-input" type="number" value="${item.cantidad}" min="1" onchange="cambiarCantidad(${index}, this.value)">
+                        <br>Subtotal: $${(item.precio * item.cantidad).toFixed(2)}
+                        <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
+                    </div>
+                `;
+                carritoList.appendChild(carritoItem);
+                total += item.precio * item.cantidad;
+            });
+            totalElement.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        function cambiarCantidad(index, nuevaCantidad) {
+            carrito[index].cantidad = parseInt(nuevaCantidad);
+            renderizarCarrito();
+        }
+
+
+        function mostrarDetalleCarrito() {
+            const carritoDetalle = document.getElementById('carrito-detalle');
+            if (carritoDetalle.style.display === 'none' || carritoDetalle.style.display === '') {
+                carritoDetalle.style.display = 'block';
+            } else {
+                carritoDetalle.style.display = 'none';
+            }
+        }
+
+
+        function iniciarPago() {
+            const payuForm = document.getElementById('payu-form');
+            payuForm.style.display = 'block';
+        }
+
+
+        window.onload = async function() {
+            const productos = await obtenerProductosFakeStore();
+            productos.forEach(producto => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('product-item');
+                productItem.innerHTML = `
+                    <div class="product-img">
+                        <img src="${producto.image}" alt="${producto.title}">
+                    </div>
+                    <div class="product-info">
+                        <h3>${producto.title}</h3>
+                        <p>Precio: $${producto.price}</p>
+                        <button onclick="agregarAlCarrito('${producto.title}', ${producto.price}, '${producto.image}')">Agregar al Carrito</button>
+                    </div>
+                `;
+                productList.appendChild(productItem);
+            });
+        };
+    </script>
+</body>
+</html>
